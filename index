@@ -3,48 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly School Newsletter</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>6 Green Newsletter</title>
     <style>
-        body { font-family: 'Helvetica', sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; }
-        .container { max-width: 800px; margin: auto; padding: 20px; }
-        header { background: #f4f4f4; padding: 20px 0; }
-        nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
-        nav button { background: #007bff; color: white; border: none; padding: 10px 15px; cursor: pointer; transition: background 0.3s; }
-        nav button:hover { background: #0056b3; }
-        #newsletter-content { margin-top: 20px; }
-        #newsletter-content img { max-width: 100%; height: auto; }
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --text-color: #333;
+            --bg-color: #f0f0f0;
+        }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; 
+            line-height: 1.6; 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-color); 
+            background-color: var(--bg-color);
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: white; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header { 
+            background: var(--primary-color); 
+            padding: 20px 0; 
+            color: white;
+        }
+        h1 { text-align: center; margin: 0; }
+        nav { 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin-top: 20px;
+        }
+        nav button { 
+            background: var(--primary-dark); 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+            font-size: 16px;
+        }
+        nav button:hover, nav button:focus { 
+            background: #357a38; 
+            outline: none;
+        }
+        #newsletter-content { 
+            margin-top: 20px; 
+            text-align: center;
+        }
+        #newsletter-content a { 
+            display: inline-block; 
+            margin-top: 10px; 
+            padding: 10px 20px; 
+            background-color: var(--primary-color); 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #newsletter-content a:hover, #newsletter-content a:focus { 
+            background-color: var(--primary-dark);
+            outline: none;
+        }
         #links-section { margin-top: 20px; }
-        #links-section a { color: #007bff; text-decoration: none; }
-        #links-section a:hover { text-decoration: underline; }
+        #links-section a { 
+            color: var(--primary-color); 
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        #links-section a:hover, #links-section a:focus { 
+            text-decoration: underline; 
+            color: var(--primary-dark);
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        @media (max-width: 600px) {
+            nav button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <nav id="newsletter-nav"></nav>
+        <h1>6 Green Newsletter</h1>
+        <nav id="newsletter-nav" aria-label="Newsletter navigation"></nav>
     </header>
-    <div class="container">
-        <div id="newsletter-content"></div>
-        <div id="links-section"></div>
-    </div>
+    <main class="container">
+        <div id="newsletter-content" aria-live="polite"></div>
+        <div id="links-section" aria-live="polite"></div>
+    </main>
 
     <script>
     (function() {
+        'use strict';
+
         const CANVA_URL = 'https://www.canva.com/design/DAGN_OghJQo/k5ifeZXWfik0FME79_JxLw/view?utm_content=DAGN_OghJQo&utm_campaign=designshare&utm_medium=link&utm_source=editor';
         let newsletters = [];
 
         function fetchNewsletters() {
-            // In a real scenario, this would be an API call
-            // For now, we'll simulate with local data
-            const today = moment();
+            const today = new Date();
             for (let i = 0; i < 10; i++) {
-                const date = moment(today).subtract(i * 7, 'days');
-                if (date.day() === 5) { // Friday
+                const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (i * 7));
+                if (date.getDay() === 5) { // Friday
                     newsletters.push({
-                        id: date.format('YYYY-MM-DD'),
-                        title: date.format('MMMM D, YYYY'),
-                        content: `<img src="${CANVA_URL}" alt="Newsletter for ${date.format('MMMM D, YYYY')}">`,
+                        id: date.toISOString().split('T')[0],
+                        title: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        content: `<p>Newsletter for ${date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p><a href="${CANVA_URL}" target="_blank" rel="noopener noreferrer">View Newsletter<span class="sr-only"> for ${date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></a>`,
                         links: [
                             { text: 'School Calendar', url: '#calendar' },
                             { text: 'Lunch Menu', url: '#lunch' },
@@ -56,21 +137,34 @@
         }
 
         function populateNavigation() {
-            const nav = $('#newsletter-nav');
+            const nav = document.getElementById('newsletter-nav');
             newsletters.forEach(newsletter => {
-                nav.append(`<button data-id="${newsletter.id}">${newsletter.title}</button>`);
+                const button = document.createElement('button');
+                button.textContent = newsletter.title;
+                button.setAttribute('data-id', newsletter.id);
+                button.addEventListener('click', function() {
+                    displayNewsletter(this.getAttribute('data-id'));
+                });
+                nav.appendChild(button);
             });
         }
 
         function displayNewsletter(id) {
             const newsletter = newsletters.find(n => n.id === id);
             if (newsletter) {
-                $('#newsletter-content').html(newsletter.content);
-                const linksList = $('#links-section');
-                linksList.empty().append('<h2>Quick Links</h2><ul></ul>');
-                const ul = linksList.find('ul');
+                document.getElementById('newsletter-content').innerHTML = newsletter.content;
+                const linksList = document.getElementById('links-section');
+                linksList.innerHTML = '<h2>Quick Links</h2><ul></ul>';
+                const ul = linksList.querySelector('ul');
                 newsletter.links.forEach(link => {
-                    ul.append(`<li><a href="${link.url}" target="_blank">${link.text}</a></li>`);
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.textContent = link.text;
+                    a.setAttribute('target', '_blank');
+                    a.setAttribute('rel', 'noopener noreferrer');
+                    li.appendChild(a);
+                    ul.appendChild(li);
                 });
                 trackView(id);
             }
@@ -86,24 +180,28 @@
             console.log(`Link clicked: ${linkText}`);
         }
 
-        $(document).ready(function() {
+        function init() {
             fetchNewsletters();
             populateNavigation();
 
-            $('#newsletter-nav').on('click', 'button', function() {
-                const id = $(this).data('id');
-                displayNewsletter(id);
-            });
-
-            $('#links-section').on('click', 'a', function(e) {
-                trackClick($(this).text());
+            document.getElementById('links-section').addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    trackClick(e.target.textContent);
+                }
             });
 
             // Display the most recent newsletter by default
             if (newsletters.length > 0) {
                 displayNewsletter(newsletters[0].id);
             }
-        });
+        }
+
+        // Ensure the DOM is fully loaded before initializing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     })();
     </script>
 </body>
