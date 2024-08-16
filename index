@@ -4,30 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>6 Green Newsletter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
     <style>
-        body { font-family: 'Helvetica', sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f0f0f0; }
-        .container { max-width: 800px; margin: auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        header { background: #4CAF50; padding: 20px 0; color: white; }
-        h1 { text-align: center; margin: 0; }
-        nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-        nav button { background: #45a049; color: white; border: none; padding: 10px 15px; cursor: pointer; transition: background 0.3s; }
-        nav button:hover { background: #357a38; }
-        #newsletter-content { margin-top: 20px; text-align: center; }
-        #newsletter-content a { display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
-        #newsletter-content a:hover { background-color: #45a049; }
-        #links-section { margin-top: 20px; }
-        #links-section a { color: #4CAF50; text-decoration: none; }
-        #links-section a:hover { text-decoration: underline; }
+        body {
+            font-family: 'Helvetica', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background: #4CAF50;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        nav button {
+            background: #45a049;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        nav button:hover {
+            background: #357a38;
+        }
+        #newsletter-content {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        #newsletter-content a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        #newsletter-content a:hover {
+            background-color: #45a049;
+        }
+        #links-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+        #links-section a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        #links-section a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>6 Green Newsletter</h1>
-        <nav id="newsletter-nav"></nav>
     </header>
     <div class="container">
+        <nav id="newsletter-nav"></nav>
         <div id="newsletter-content"></div>
         <div id="links-section"></div>
     </div>
@@ -37,11 +100,10 @@
         const CANVA_URL = 'https://www.canva.com/design/DAGN_OghJQo/k5ifeZXWfik0FME79_JxLw/view?utm_content=DAGN_OghJQo&utm_campaign=designshare&utm_medium=link&utm_source=editor';
         let newsletters = [];
 
-        // Function to simulate fetching newsletters
-        function fetchNewsletters() {
-            const today = moment();
+        async function fetchNewsletters() {
+            const today = dayjs();
             for (let i = 0; i < 10; i++) {
-                const date = moment(today).subtract(i * 7, 'days');
+                const date = today.subtract(i * 7, 'day');
                 if (date.day() === 5) { // Friday
                     newsletters.push({
                         id: date.format('YYYY-MM-DD'),
@@ -57,7 +119,6 @@
             }
         }
 
-        // Function to populate the navigation buttons
         function populateNavigation() {
             const nav = $('#newsletter-nav');
             newsletters.forEach(newsletter => {
@@ -65,7 +126,6 @@
             });
         }
 
-        // Function to display a newsletter based on its ID
         function displayNewsletter(id) {
             const newsletter = newsletters.find(n => n.id === id);
             if (newsletter) {
@@ -80,36 +140,31 @@
             }
         }
 
-        // Function to track newsletter views
         function trackView(id) {
             console.log(`Newsletter viewed: ${id}`);
         }
 
-        // Function to track link clicks
         function trackClick(linkText) {
             console.log(`Link clicked: ${linkText}`);
         }
 
-        // Initialization
         $(document).ready(function() {
-            fetchNewsletters();
-            populateNavigation();
+            fetchNewsletters().then(() => {
+                populateNavigation();
 
-            // Handle button clicks to display the selected newsletter
-            $('#newsletter-nav').on('click', 'button', function() {
-                const id = $(this).data('id');
-                displayNewsletter(id);
+                $('#newsletter-nav').on('click', 'button', function() {
+                    const id = $(this).data('id');
+                    displayNewsletter(id);
+                });
+
+                $('#links-section').on('click', 'a', function(e) {
+                    trackClick($(this).text());
+                });
+
+                if (newsletters.length > 0) {
+                    displayNewsletter(newsletters[0].id);
+                }
             });
-
-            // Handle link clicks for tracking purposes
-            $('#links-section').on('click', 'a', function(e) {
-                trackClick($(this).text());
-            });
-
-            // Display the most recent newsletter by default
-            if (newsletters.length > 0) {
-                displayNewsletter(newsletters[0].id);
-            }
         });
     })();
     </script>
