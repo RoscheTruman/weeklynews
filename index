@@ -4,10 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>6 Green Newsletter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
-        nav { margin-bottom: 20px; }
-        button { margin-right: 10px; padding: 5px 10px; }
+        body { font-family: 'Helvetica', sans-serif; line-height: 1.6; margin: 0; padding: 0; color: #333; background-color: #f0f0f0; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        header { background: #4CAF50; padding: 20px 0; color: white; }
+        h1 { text-align: center; margin: 0; }
+        nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        nav button { background: #45a049; color: white; border: none; padding: 10px 15px; cursor: pointer; transition: background 0.3s; }
+        nav button:hover { background: #357a38; }
+        #newsletter-content { margin-top: 20px; text-align: center; }
+        #newsletter-content a { display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
+        #newsletter-content a:hover { background-color: #45a049; }
+        #links-section { margin-top: 20px; }
+        #links-section a { color: #4CAF50; text-decoration: none; }
+        #links-section a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -15,61 +27,90 @@
         <h1>6 Green Newsletter</h1>
         <nav id="newsletter-nav"></nav>
     </header>
-    <main>
+    <div class="container">
         <div id="newsletter-content"></div>
-    </main>
+        <div id="links-section"></div>
+    </div>
 
     <script>
-    // Use an IIFE to avoid polluting the global scope
     (function() {
-        'use strict';
-
         const CANVA_URL = 'https://www.canva.com/design/DAGN_OghJQo/k5ifeZXWfik0FME79_JxLw/view?utm_content=DAGN_OghJQo&utm_campaign=designshare&utm_medium=link&utm_source=editor';
-        
-        // Sample data - in a real application, this would come from an API or database
-        const newsletters = [
-            { id: '2023-08-18', title: 'August 18, 2023' },
-            { id: '2023-08-25', title: 'August 25, 2023' },
-            { id: '2023-09-01', title: 'September 1, 2023' }
-        ];
+        let newsletters = [];
 
-        function populateNavigation() {
-            const nav = document.getElementById('newsletter-nav');
-            newsletters.forEach(newsletter => {
-                const button = document.createElement('button');
-                button.textContent = newsletter.title;
-                button.addEventListener('click', () => displayNewsletter(newsletter.id));
-                nav.appendChild(button);
-            });
-        }
-
-        function displayNewsletter(id) {
-            const newsletter = newsletters.find(n => n.id === id);
-            if (newsletter) {
-                const content = document.getElementById('newsletter-content');
-                content.innerHTML = `
-                    <h2>${newsletter.title}</h2>
-                    <p>Content for ${newsletter.title}</p>
-                    <a href="${CANVA_URL}" target="_blank" rel="noopener noreferrer">View Newsletter on Canva</a>
-                `;
+        // Function to simulate fetching newsletters
+        function fetchNewsletters() {
+            const today = moment();
+            for (let i = 0; i < 10; i++) {
+                const date = moment(today).subtract(i * 7, 'days');
+                if (date.day() === 5) { // Friday
+                    newsletters.push({
+                        id: date.format('YYYY-MM-DD'),
+                        title: date.format('MMMM D, YYYY'),
+                        content: `<p>Newsletter for ${date.format('MMMM D, YYYY')}</p><a href="${CANVA_URL}" target="_blank">View Newsletter</a>`,
+                        links: [
+                            { text: 'School Calendar', url: '#calendar' },
+                            { text: 'Lunch Menu', url: '#lunch' },
+                            { text: 'Parent Portal', url: '#portal' }
+                        ]
+                    });
+                }
             }
         }
 
-        // Initialize the page
-        function init() {
+        // Function to populate the navigation buttons
+        function populateNavigation() {
+            const nav = $('#newsletter-nav');
+            newsletters.forEach(newsletter => {
+                nav.append(`<button data-id="${newsletter.id}">${newsletter.title}</button>`);
+            });
+        }
+
+        // Function to display a newsletter based on its ID
+        function displayNewsletter(id) {
+            const newsletter = newsletters.find(n => n.id === id);
+            if (newsletter) {
+                $('#newsletter-content').html(newsletter.content);
+                const linksList = $('#links-section');
+                linksList.empty().append('<h2>Quick Links</h2><ul></ul>');
+                const ul = linksList.find('ul');
+                newsletter.links.forEach(link => {
+                    ul.append(`<li><a href="${link.url}" target="_blank">${link.text}</a></li>`);
+                });
+                trackView(id);
+            }
+        }
+
+        // Function to track newsletter views
+        function trackView(id) {
+            console.log(`Newsletter viewed: ${id}`);
+        }
+
+        // Function to track link clicks
+        function trackClick(linkText) {
+            console.log(`Link clicked: ${linkText}`);
+        }
+
+        // Initialization
+        $(document).ready(function() {
+            fetchNewsletters();
             populateNavigation();
+
+            // Handle button clicks to display the selected newsletter
+            $('#newsletter-nav').on('click', 'button', function() {
+                const id = $(this).data('id');
+                displayNewsletter(id);
+            });
+
+            // Handle link clicks for tracking purposes
+            $('#links-section').on('click', 'a', function(e) {
+                trackClick($(this).text());
+            });
+
             // Display the most recent newsletter by default
             if (newsletters.length > 0) {
                 displayNewsletter(newsletters[0].id);
             }
-        }
-
-        // Ensure the DOM is fully loaded before initializing
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        });
     })();
     </script>
 </body>
